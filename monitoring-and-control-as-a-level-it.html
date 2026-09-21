@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring and Control — AS &amp; A Level IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1220;
+    --bg-raised:#141b2e;
+    --bg-deep:#090d18;
+    --trace:#40557d;
+    --trace-dim:#212b45;
+    --paper:#e7e9f1;
+    --paper-dim:#9ba4bc;
+    --signal:#45b8cf;
+    --signal-bright:#7fd9ea;
+    --gold:#e6b85c;
+    --brick:#e0685c;
+    --sage:#86c9a0;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--trace-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--trace-dim) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: -1px -1px;
+    color:var(--paper);
+    font-family: var(--serif);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--signal-bright);}
+  ::selection{background:var(--signal); color:#04141a;}
+
+  .wrap{ max-width:760px; margin:0 auto; padding: 0 24px 120px; }
+
+  nav.theory-nav{
+    max-width:760px; margin:0 auto; padding:14px 24px 0;
+    display:flex; justify-content:space-between; gap:12px;
+  }
+  nav.theory-nav a{
+    font-family:var(--mono); font-size:12.5px; text-decoration:none; color:var(--paper-dim);
+    border:1px solid var(--trace); padding:8px 13px; border-radius:var(--radius);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  nav.theory-nav a:hover{ color:var(--paper); border-color:var(--paper-dim); }
+  nav.theory-nav a.disabled{ opacity:.4; pointer-events:none; }
+  nav.theory-nav .spacer{flex:1;}
+  @media (max-width:600px){ nav.theory-nav a span.full{display:none;} }
+
+  header.hero{
+    padding:44px 24px 34px; max-width:760px; margin:0 auto; border-bottom:1px solid var(--trace);
+  }
+  .kicker{ font-family:var(--mono); font-size:13px; color:var(--sage); margin:0 0 10px; }
+  h1.title{
+    font-family:var(--mono); font-weight:700; font-size:clamp(24px,5vw,38px);
+    line-height:1.15; margin:0 0 14px; color:var(--paper);
+  }
+  .hero p{ color:var(--paper-dim); max-width:60ch; margin:0; font-size:17.5px; }
+
+  nav.tabs{
+    max-width:760px; margin:0 auto; padding:14px 24px; display:flex; gap:6px;
+    overflow-x:auto; border-bottom:1px solid var(--trace); position:sticky; top:0;
+    background:rgba(13,18,32,.95); backdrop-filter: blur(4px); z-index:30;
+  }
+  nav.tabs button{
+    font-family:var(--mono); font-size:12.5px; white-space:nowrap; background:transparent;
+    border:1px solid var(--trace); color:var(--paper-dim); padding:8px 13px;
+    border-radius:var(--radius); cursor:pointer; flex-shrink:0;
+  }
+  nav.tabs button:hover{ color:var(--paper); border-color:var(--paper-dim); background:transparent; }
+  nav.tabs button.active{ background:var(--signal); color:#04141a; border-color:var(--signal); font-weight:500; }
+
+  .panel{ display:none; padding:40px 0 8px; }
+  .panel.active{ display:block; }
+
+  h2.section-title{
+    font-family:var(--mono); font-size:22px; color:var(--signal-bright);
+    margin:0 0 6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  }
+  h2.section-title .tag{
+    font-size:12px; color:var(--sage); border:1px solid var(--trace);
+    padding:2px 7px; border-radius:var(--radius);
+  }
+  h3{ font-family:var(--mono); font-size:16px; color:var(--gold); margin:26px 0 8px; font-weight:500; }
+  p{margin:10px 0;}
+  ul, ol{padding-left:22px; margin:10px 0;}
+  li{margin:4px 0;}
+  strong{color:var(--paper); font-weight:600;}
+
+  table{ width:100%; border-collapse:collapse; margin:14px 0 8px; font-size:15px; }
+  th,td{ border:1px solid var(--trace); padding:8px 10px; text-align:left; vertical-align:top; }
+  th{ font-family:var(--mono); font-size:12px; color:var(--sage); font-weight:500; background:rgba(134,201,160,0.06); }
+  .table-scroll{ overflow-x:auto; }
+  .note{ color:var(--paper-dim); font-size:14.5px; }
+
+  .block{ border-left:2px solid var(--trace); padding-left:18px; margin:18px 0; }
+  .block ul, .block ol{ margin:0; padding-left:20px; }
+
+  .proscons{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 8px; }
+  .pc{ border:1px solid var(--trace); border-radius:var(--radius); background:var(--bg-raised); padding:2px 14px 12px; }
+  .pc.pro{ border-top:2px solid var(--sage); }
+  .pc.con{ border-top:2px solid var(--brick); }
+  .pc-title{ font-family:var(--mono); font-size:12.5px; font-weight:500; margin:12px 0 4px; }
+  .pc.pro .pc-title{ color:var(--sage); }
+  .pc.con .pc-title{ color:var(--brick); }
+  .pc ul{ padding-left:18px; margin:6px 0 0; font-size:15px; }
+  @media (max-width:600px){ .proscons{ grid-template-columns:1fr; } }
+
+  details.fold{ border:1px solid var(--trace); border-radius:var(--radius); margin:12px 0; background:var(--bg-raised); }
+  details.fold summary{ font-family:var(--mono); font-size:13.5px; color:var(--gold); padding:11px 14px; cursor:pointer; }
+  details.fold[open] summary{ border-bottom:1px solid var(--trace); }
+  details.fold .fold-body{ padding:2px 14px 12px; }
+
+
+  .codewrap{ margin:16px 0; }
+  .code-label{ display:block; font-family:var(--mono); font-size:12px; color:var(--sage); margin-bottom:6px; }
+  pre.code{
+    margin:0; padding:14px 16px; background:var(--bg-deep); border:1px solid var(--trace);
+    border-left:3px solid var(--signal); border-radius:var(--radius);
+    font-family:var(--mono); font-size:13px; line-height:1.6; overflow-x:auto; color:var(--paper);
+  }
+  pre.code .kw{ color:var(--gold); }
+  .example{ border:1px solid var(--trace); border-left:3px solid var(--gold); border-radius:var(--radius); background:var(--bg-raised); padding:2px 16px 10px; margin:16px 0; }
+  .example .ex-label{ font-family:var(--mono); font-size:12px; color:var(--gold); margin:12px 0 4px; display:block; }
+
+  .diagram-box{
+    background:var(--bg-deep); border:1px solid var(--trace); border-radius:var(--radius);
+    padding:14px 10px; margin:18px 0 6px; text-align:center;
+  }
+  .diagram-box svg{ width:100%; height:auto; max-width:460px; }
+  .diagram-box svg.wide{ max-width:600px; }
+  .diagram-caption{ font-family:var(--mono); font-size:12px; color:var(--paper-dim); margin-top:6px; }
+  .signal-caption{ font-family: var(--mono); font-size:12.5px; color:var(--paper-dim); margin-top:8px; text-align:center; }
+
+  .task{ margin:32px 0; border:1px solid var(--trace); border-radius:var(--radius); background: var(--bg-raised); padding:20px 20px 22px; }
+  .task-label{ font-family:var(--mono); font-size:12px; color:var(--signal-bright); margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; }
+  .task-label .pts{color:var(--sage);}
+  .task h4{ margin:0 0 12px; font-family:var(--serif); font-weight:600; font-size:16.5px; color:var(--paper); }
+  .task .sub-q{margin:18px 0;}
+  .task .sub-q:first-child{margin-top:0;}
+  .sub-q label{ display:block; font-family:var(--serif); font-size:15.5px; margin-bottom:8px; color:var(--paper); }
+
+  textarea{
+    width:100%; min-height:52px; background:var(--bg-deep); border:1px solid var(--trace);
+    border-radius:var(--radius); color:var(--paper); font-family:var(--serif);
+    font-size:15.5px; padding:10px 12px; resize:vertical;
+  }
+  textarea:focus, button:focus-visible, .opt:focus-visible, summary:focus-visible, input[type=checkbox]:focus-visible{ outline:2px solid var(--signal-bright); outline-offset:1px; }
+  .row{ display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+
+  button{
+    font-family:var(--mono); font-size:13px; background:var(--signal); color:#04141a;
+    border:none; padding:9px 15px; border-radius:var(--radius); cursor:pointer; font-weight:500;
+  }
+  button:hover{background:var(--signal-bright);}
+  button.ghost{ background:transparent; border:1px solid var(--trace); color:var(--paper-dim); }
+  button.ghost:hover{ color:var(--paper); border-color:var(--paper-dim); background:transparent; }
+  button:disabled{opacity:.5; cursor:default;}
+
+  .error-msg{ color:var(--brick); font-family:var(--mono); font-size:13px; margin-top:8px; display:none; }
+  .error-msg.show{display:block;}
+
+  .answer-reveal{
+    display:none; margin-top:12px; padding:12px 14px; background:rgba(134,201,160,0.08);
+    border-left:2px solid var(--sage); border-radius:0 var(--radius) var(--radius) 0;
+  }
+  .answer-reveal.show{display:block;}
+  .answer-reveal .lbl{ font-family:var(--mono); font-size:11.5px; color:var(--sage); display:block; margin-bottom:5px; }
+
+  .self-mark{ display:none; align-items:center; gap:8px; margin-top:12px; font-family:var(--mono); font-size:13px; color:var(--paper-dim); }
+  .self-mark.show{display:flex;}
+  .self-mark input[type=checkbox]{ width:17px; height:17px; accent-color: var(--gold); cursor:pointer; }
+  .self-mark label{cursor:pointer; margin:0; font-family:var(--mono); font-size:13px; color:var(--paper-dim);}
+
+  .markpoints{
+    display:none; margin-top:12px; padding:12px 14px; background:rgba(134,201,160,0.08);
+    border-left:2px solid var(--sage); border-radius:0 var(--radius) var(--radius) 0;
+  }
+  .markpoints.show{display:block;}
+  .markpoints .lbl{ font-family:var(--mono); font-size:11.5px; color:var(--sage); display:block; margin-bottom:6px; }
+  .markpoints .mp-item{
+    display:flex; gap:10px; align-items:flex-start; margin:0; padding:7px 0;
+    border-bottom:1px solid var(--trace-dim); font-size:15px; font-weight:400; cursor:pointer;
+  }
+  .markpoints .mp-item:last-of-type{border-bottom:none;}
+  .markpoints .mp-item input{ width:17px; height:17px; margin-top:3px; flex-shrink:0; accent-color:var(--gold); cursor:pointer; }
+  .mp-foot{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:8px; font-family:var(--mono); font-size:13px; }
+  .mp-count{ color:var(--gold); }
+  .mp-note{ color:var(--brick); }
+
+  .mcq{margin:20px 0;}
+  .mcq:first-of-type{margin-top:0;}
+  .mcq p.q{ font-family:var(--serif); font-size:15.5px; color:var(--paper); margin:0 0 10px; }
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; background:var(--bg-deep); border:1px solid var(--trace); color:var(--paper);
+    padding:10px 13px; border-radius:var(--radius); font-family:var(--serif); font-size:15px; cursor:pointer; font-weight:400;
+  }
+  .opt:hover:not(:disabled){border-color:var(--signal); background:var(--bg-deep);}
+  .opt.correct{border-color:var(--sage); background:rgba(134,201,160,0.14);}
+  .opt.incorrect{border-color:var(--brick); background:rgba(224,104,92,0.14);}
+  .opt:disabled{cursor:default;}
+  .mcq-feedback{ font-family:var(--mono); font-size:13px; margin-top:8px; min-height:1.2em; }
+  .mcq-feedback.ok{color:var(--sage);}
+  .mcq-feedback.bad{color:var(--brick);}
+
+  .classify-item{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 0; border-bottom:1px solid var(--trace-dim); flex-wrap:wrap;
+  }
+  .classify-item:last-child{border-bottom:none;}
+  .classify-item .term{font-size:15px; max-width:60%;}
+  .classify-item .choices{display:flex; gap:8px; flex-wrap:wrap;}
+  .classify-item .choices button{
+    background:transparent; border:1px solid var(--trace); color:var(--paper-dim);
+    font-size:12px; padding:6px 10px;
+  }
+  .classify-item .choices button:hover:not(:disabled){ color:var(--paper); border-color:var(--paper-dim); }
+  .classify-item .choices button.correct{background:rgba(134,201,160,0.16); border-color:var(--sage); color:var(--paper);}
+  .classify-item .choices button.incorrect{background:rgba(224,104,92,0.16); border-color:var(--brick); color:var(--paper);}
+  @media (max-width:600px){ .classify-item .term{max-width:100%;} }
+
+  #score-badge{
+    position:fixed; top:14px; right:14px; z-index:50; font-family:var(--mono); font-size:13px;
+    background:var(--bg-raised); border:1px solid var(--signal); color:var(--signal-bright);
+    padding:8px 13px; border-radius:var(--radius); box-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  #score-badge .n{color:var(--gold); font-weight:700;}
+
+  footer{ max-width:760px; margin:0 auto; padding:40px 24px 0; font-family:var(--mono); font-size:12.5px; color:var(--paper-dim); }
+
+  @media (max-width:600px){
+    body{font-size:16px;}
+    header.hero{padding:36px 20px 26px;}
+    #score-badge{top:auto; bottom:14px; right:14px;}
+  }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<div id="score-badge">Score: <span class="n" id="score-val">0</span> / <span id="score-max">0</span></div>
+
+<nav class="theory-nav">
+  <a class="disabled" href="#" aria-disabled="true">← <span class="full">Previous theory</span></a>
+  <span class="spacer"></span>
+  <a class="disabled" href="#" aria-disabled="true"><span class="full">Next theory</span> →</a>
+</nav>
+
+<header class="hero">
+  <p class="kicker">Cambridge AS &amp; A Level IT · Monitoring and Control</p>
+  <h1 class="title">Monitoring and Control</h1>
+  <p>Computers can watch the physical world through sensors, and act on it through actuators. This page covers how monitoring systems measure and record, why sensors need calibrating, and how control systems keep greenhouses, heating, car parks and smart homes running by themselves.</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-panel="monitoring">3.1 Monitoring technologies</button>
+  <button class="tab-btn" data-panel="control">3.2 Control technologies</button>
+</nav>
+
+<div class="wrap">
+
+<div class="panel active" id="panel-monitoring">
+  <h2 class="section-title">Monitoring technologies <span class="tag">3.1</span></h2>
+
+  <h3>Monitoring systems</h3>
+<div class="block">
+  <ul>
+    <li><strong>Monitoring</strong> (measuring) uses a computer or microprocessor-based device to measure a physical variable over a period of time.</li>
+    <li>Monitoring systems process and record data so that people can see <strong>trends</strong> in the changes taking place in the environment being monitored.</li>
+    <li>They use <strong>sensors</strong>, which convert physical variables such as temperature, light or pressure into a signal that can be measured electrically.</li>
+    <li>The sensors continually send data back to the computer or microprocessor.</li>
+    <li>Most sensors used in monitoring are <strong>analogue</strong>, so the data sent to the computer is analogue. It is converted into digital form by an <strong>analogue to digital converter (ADC)</strong> so the computer can process it.</li>
+    <li>The output is usually on a screen or printed out, but can be a warning sound if the monitoring is critical, for example in a nuclear reactor.</li>
+    <li>Monitoring is continuous and never ends.</li>
+  </ul>
+</div>
+
+  <h3>Sensors used in monitoring</h3>
+<div class="table-scroll">
+<table>
+<tr><th>Sensor</th><th>Description and use</th></tr>
+<tr><td><strong>Light / ultraviolet</strong></td><td>Light falling on the sensor generates electrical energy, which is converted into a value for the amount of light. Used in weather stations to measure the amount of sunshine. Ultraviolet sensors measure UV (specifically UVB radiation, which can be dangerous to humans and sometimes causes skin cancer).</td></tr>
+<tr><td><strong>Temperature</strong></td><td>The sensor’s electrical resistance changes, or it generates a voltage, according to temperature. This electrical signal is converted into a temperature value. Used to feed back the ambient temperature in a weather station, the temperature in a river, or air quality.</td></tr>
+<tr><td><strong>Pressure</strong></td><td>The force applied to the sensor’s surface generates electrical energy, which is converted into a pressure value. Used to measure atmospheric pressure in weather stations.</td></tr>
+<tr><td><strong>Humidity / moisture</strong></td><td>A humidity sensor combines a moisture sensor and a temperature sensor, because humidity can only be calculated by knowing how much water is in the air together with the temperature. A moisture sensor is a light sensor combined with a light emitter, because the amount of light transmitted depends on the moisture content of the air. Humidity sensors measure air humidity in weather stations; moisture sensors are also used to monitor soil quality.</td></tr>
+<tr><td><strong>Sound</strong></td><td>Converts sound waves into voltages (electrical signals), which the computer converts into values representing the sound. Used in environmental monitoring to measure noise pollution.</td></tr>
+<tr><td><strong>Infrared</strong></td><td>All bodies have thermal energy and give off infrared radiation, which the sensor converts into an electrical signal. Used in environmental monitoring, for example to monitor the Earth’s surface temperature from satellites.</td></tr>
+<tr><td><strong>Oxygen, carbon dioxide, pH, turbidity</strong></td><td>Used in environmental and water pollution monitoring.<br><strong>Oxygen (O<sub>2</sub>)</strong>: measures the level of oxygen in soil and water.<br><strong>Carbon dioxide (CO<sub>2</sub>)</strong>: measures the level of CO<sub>2</sub> in air or water; it is an adaptation of an infrared sensor.<br><strong>pH</strong>: measures acidity of soil and of rivers and lakes. It works like a simple battery, generating electricity depending on the number of hydrogen ions in the solution, which makes an electrode generate a voltage.<br><strong>Turbidity</strong>: measures how cloudy water in a river is because of pollution. It is a light sensor, usually at right angles to a light emitter: the more particles in the water, the more light is reflected onto the sensor.</td></tr>
+<tr><td><strong>Reed switch</strong></td><td>Strictly speaking a reed switch is not a sensor, but it is used to help measure rainfall (see weather stations below).</td></tr>
+</table>
+</div>
+
+  <h3>Uses of monitoring technologies</h3>
+
+  <p><strong>Weather stations</strong> can measure temperature, rainfall, hours of sunlight, atmospheric pressure, humidity and UV radiation. For this they need:</p>
+<div class="block">
+  <ul>
+    <li><strong>Temperature sensors</strong> — to measure the <strong>ambient temperature</strong>, meaning the temperature of the air surrounding the weather station.</li>
+    <li><strong>Pressure sensors</strong> — to measure atmospheric pressure, the pressure of the air above us. Readings are used to make weather forecasts: high pressure indicates sunny weather, low pressure indicates wet and windy weather.</li>
+    <li><strong>Humidity sensors</strong> — to measure absolute and relative humidity. <em>Absolute humidity</em> is the amount of moisture in the air, measured without taking temperature into account, as water per cubic metre of air. <em>Relative humidity</em> takes the air temperature into account and is a percentage: the amount of moisture in the air compared with the maximum the air could hold at that temperature. It is used to predict the likelihood of rain and snow.</li>
+    <li><strong>Light sensors</strong> — to measure the hours of sunlight. This needs an array of light sensors that together measure the intensity of the light radiation.</li>
+    <li><strong>A tipping bucket and a reed switch</strong> — to measure rainfall. The bucket tips when rain has reached a certain weight, empties, then tips back to collect more. Each tip activates a reed switch, which sends a signal to the microprocessor. The microprocessor counts the tips and calculates the rainfall by multiplying the tip count by the amount of rain needed to tip the bucket.</li>
+  </ul>
+</div>
+
+  <p><strong>Processing in a weather station</strong></p>
+<div class="block">
+  <ul>
+    <li>Once the computer receives the data from the ADC it stores it in a table, which could be a spreadsheet or database, so it can be processed.</li>
+    <li>Processing might work out, for each day, the highest, lowest and mean temperature, the level of UV radiation, total rainfall, hours of sunshine, the highest and lowest atmospheric pressure, and wind speed and direction.</li>
+    <li>These values can also be calculated for the month and the year to date. Results can be output as graphs, on a monitor or printed.</li>
+    <li>All of this happens automatically, without human intervention.</li>
+  </ul>
+</div>
+
+  <p><strong>Monitoring water pollution</strong></p>
+<div class="block">
+  <ul>
+    <li>There are two ways of carrying out water pollution studies.</li>
+    <li><strong>Method 1</strong> — compare the readings with those that would normally be expected. One set of sensors is lowered into the river or lake.</li>
+    <li><strong>Method 2</strong> — insert two sets of sensors, one upstream from the suspected site of pollution and one downstream, immediately after the site (such as a farm or factory). The readings from the two sets are compared to see whether there are differences, so a conclusion can be reached on whether the site is causing pollution.</li>
+    <li>The sensors feed data to an ADC and then the computer processes it.</li>
+    <li>The sensors used are temperature, pH, turbidity, oxygen and CO<sub>2</sub> sensors.</li>
+    <li>The processing is a comparison of the readings with normal values (method 1) or a comparison of the readings from the two sets of sensors (method 2).</li>
+  </ul>
+</div>
+
+  <p><strong>Environmental monitoring</strong> is the collection of data relating to our environment. This could be:</p>
+<div class="block">
+  <ul>
+    <li>Monitoring sound in cities, along with other pollution produced by motor vehicles</li>
+    <li>Monitoring soil quality in outdoor gardens and in greenhouses, using pH, moisture and temperature sensors</li>
+  </ul>
+</div>
+
+  <p>Environmental monitoring can also be linked to climate study, and can include:</p>
+<div class="block">
+  <ul>
+    <li>Detecting abnormally high temperatures with temperature sensors, so that people can be warned of the dangers</li>
+    <li>Monitoring air pollution with oxygen and CO<sub>2</sub> sensors; pH sensors can also help because they give acidity readings</li>
+    <li>Monitoring ultraviolet levels: excessive UV can cause skin cancer, so governments in high-risk countries often measure it to judge whether people should be advised to wear skin protection cream</li>
+  </ul>
+</div>
+
+  <h3>Calibration</h3>
+  <p><strong>Calibration</strong> is making sure that a sensor gives accurate readings. For example, when a temperature sensor measures boiling water, it should cause the computer to output 100 °C. It is done by comparing the value the sensor produces with a known measurement.</p>
+
+  <p><strong>The importance of calibration</strong></p>
+<div class="block">
+  <ul>
+    <li>The accuracy of all sensors reduces over time, because of constant use and exposure to the atmosphere or liquids being measured.</li>
+    <li>Slight erosion of the sensor’s material can also make readings less accurate.</li>
+    <li>Regular calibration helps maintain the accuracy of the sensors.</li>
+    <li>Other devices in a monitoring system, such as the ADC, may deteriorate over time and also need recalibration.</li>
+  </ul>
+</div>
+
+  <p><strong>Methods used to calibrate devices</strong></p>
+<div class="block">
+  <ul>
+    <li>To calibrate a temperature sensor you need a known temperature value. This could come from a heat source such as boiling water, which gives an accurate high temperature, or from a mixture of ice and water, which gives an accurate 0 °C.</li>
+    <li>The sensor generates a voltage, which is converted into a temperature reading. The algorithm that does this can be refined so the reading matches the actual temperature.</li>
+    <li>The alternative is to take a reading from a sensor that has already been calibrated and compare the temperature reading of the sensor being calibrated with it.</li>
+  </ul>
+</div>
+
+  <h3>One-point calibration</h3>
+<div class="block">
+  <ul>
+    <li>The easiest type to perform; only one measurement point is needed.</li>
+    <li>This makes it appropriate for sensors that measure a set temperature, or a temperature range, that is constant.</li>
+    <li>It is often needed for sensors constantly used at very high temperatures, which lose accuracy after some time. Doing a one-point calibration every so often and comparing it with the previous calibration shows this.</li>
+    <li>A reading is taken from the sensor in the range being measured and compared with a pre-calibrated sensor or a known value.</li>
+    <li>The sensor reading is subtracted from the known value, which gives an <strong>offset</strong>.</li>
+    <li>The offset is added to every reading in the temperature range being measured.</li>
+  </ul>
+</div>
+<div class="example"><span class="ex-label">Example</span><p>A sensor is placed in boiling water (known value 100 °C) and reads 98 °C. The offset is 100 − 98 = +2 °C, so 2 °C is added to every later reading: a reading of 60 °C becomes 62 °C.</p></div>
+
+  <h3>Two-point calibration</h3>
+<div class="block">
+  <ul>
+    <li>Used with sensors that measure a constantly changing variable.</li>
+    <li>Two readings are taken with the sensor, which lets the relationship between the sensor and the standard (pre-calibrated) sensor be established.</li>
+    <li>It can correct both <strong>slope</strong> and <strong>offset</strong> errors.</li>
+    <li>Best used when readings are <strong>linear</strong>.</li>
+    <li>Readings are taken at the low end and the high end of the range, using a check or reference instrument, or previously known readings.</li>
+    <li>The offset is calculated by comparing with the known readings.</li>
+  </ul>
+</div>
+
+  <h3>Multi-point calibration</h3>
+<div class="block">
+  <ul>
+    <li>Uses more than two readings from the sensor.</li>
+    <li>Readings are taken at a high, a middle and a low known value. For a temperature sensor, the boiling, middle and freezing temperatures of water can be used, i.e. 100 °C, 50 °C and 0 °C.</li>
+    <li>This establishes the relationship between the sensor and the standardised sensor.</li>
+    <li>Best used where readings form a curve, a <strong>non-linear</strong> relationship.</li>
+    <li>The calibration can’t be done just by adding an offset or allowing for the slope. There is no longer a linear relationship, so the algorithm needs to include <strong>curve fitting</strong>.</li>
+    <li>It uses a formula to calculate the correction, such as a quadratic: y = ax<sup>2</sup> + bx + c, where y is the reading from the standardised sensor and x is the reading from the sensor being calibrated.</li>
+  </ul>
+</div>
+
+  <h3>Comparing the three methods</h3>
+<div class="table-scroll">
+<table>
+<tr><th></th><th>One-point</th><th>Two-point</th><th>Multi-point</th></tr>
+<tr><td><strong>Readings taken</strong></td><td>One</td><td>Two: low end and high end of the range</td><td>Three or more: for example high, middle and low</td></tr>
+<tr><td><strong>Best suited to</strong></td><td>A set or constant variable</td><td>A constantly changing variable with a linear relationship</td><td>A curved, non-linear relationship</td></tr>
+<tr><td><strong>Corrects</strong></td><td>Offset only</td><td>Offset and slope</td><td>Curve fitting, using a formula such as a quadratic</td></tr>
+<tr><td><strong>Complexity</strong></td><td>Easiest</td><td>More complex than one-point</td><td>Most complex; needs greater knowledge of maths</td></tr>
+</table>
+</div>
+
+  <h3>Advantages and disadvantages of computer monitoring</h3>
+  <p class="note">This is also the answer to “evaluate the use of computers in monitoring temperature, etc. compared with traditional methods / humans”.</p>
+<div class="proscons">
+  <div class="pc pro"><p class="pc-title">Advantages</p><ul><li>Humans can’t take readings at very frequent intervals, because they must note each reading, during which they can’t take another. Computers can read at more frequent intervals, and can read more than one variable at the same time, whereas humans can only do one thing at a time and so take longer.</li><li>It is very difficult for humans to keep taking readings for long periods, whereas computers can be left on at any time, day or night. Readings are always taken at regular intervals, unlike with a human who might forget.</li><li>It takes people time to draw accurate graphs, whereas computers can produce them automatically after processing the data.</li><li>Results are produced automatically once the readings are received, unlike a human who would take a lot of time to write them down.</li><li>Readings taken by computers tend to be more accurate than those taken by humans, because computers are not subject to “human error”.</li></ul></div>
+  <div class="pc con"><p class="pc-title">Disadvantages</p><ul><li>Computers can be expensive to buy and to maintain, whereas humans would be expected to do the monitoring as part of their job.</li><li>It is quite difficult to program computers to interpret results, whereas humans can interpret them and are also needed to program the computers in the first place.</li><li>Sensors can deteriorate after a period of time and need recalibrating, whereas humans tend to be more consistent.</li><li>If the computer fails, or there is a power cut with no backup supply, readings can be lost.</li></ul></div>
+</div>
+
+<div class="task" data-task="open" data-points="4">
+  <p class="task-label"><span>Worked example</span><span class="pts">4 points</span></p>
+  <h4>Answer each question about monitoring.</h4>
+  <div class="sub-q">
+    <label>a) Most sensors give analogue data. What device converts it into digital data so the computer can process it?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Analogue to digital converter (ADC)</div>
+    <div class="self-mark"><input type="checkbox" id="sm-1"><label for="sm-1">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>b) Which sensor measures how cloudy river water is because of pollution?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Turbidity sensor</div>
+    <div class="self-mark"><input type="checkbox" id="sm-2"><label for="sm-2">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>c) Which two components are used together in a weather station to measure rainfall?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>A tipping bucket and a reed switch</div>
+    <div class="self-mark"><input type="checkbox" id="sm-3"><label for="sm-3">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>d) What is the process of comparing a sensor’s readings with a known measurement to keep it accurate?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Calibration</div>
+    <div class="self-mark"><input type="checkbox" id="sm-4"><label for="sm-4">My answer was close enough — award myself the point</label></div>
+  </div>
+</div>
+<div class="task" data-task="classify" data-points="6">
+  <p class="task-label"><span>Sort it</span><span class="pts">6 points</span></p>
+  <h4>Click which sensor each description matches.</h4>
+  <div class="classify-list">
+    <div class="classify-item" data-answer="press"><span class="term">Measures the pressure of the air; high readings suggest sunny weather, low readings wet and windy weather</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+    <div class="classify-item" data-answer="light"><span class="term">An array of these measures the hours of sunlight</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+    <div class="classify-item" data-answer="humid"><span class="term">Combines a moisture sensor with a temperature sensor, because it depends on how much water is in the air and the temperature</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+    <div class="classify-item" data-answer="turb"><span class="term">Uses light reflected off particles to measure how cloudy the water is</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+    <div class="classify-item" data-answer="ph"><span class="term">Works like a simple battery, giving a voltage that depends on hydrogen ions in a solution</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+    <div class="classify-item" data-answer="temp"><span class="term">Its resistance or voltage changes to give the ambient air or river temperature</span><span class="choices"><button data-choice="temp">Temperature</button><button data-choice="press">Pressure</button><button data-choice="humid">Humidity</button><button data-choice="light">Light</button><button data-choice="ph">pH</button><button data-choice="turb">Turbidity</button></span></div>
+  </div>
+</div>
+<div class="task" data-task="points" data-points="6">
+  <p class="task-label"><span>Extended answer</span><span class="pts">6 points</span></p>
+  <h4>Evaluate the use of different forms of calibration. (6 marks) Tip: cover all three methods — the mark scheme caps you at 5 marks if you don’t, or if you only list points.</h4>
+  <div class="sub-q mp" data-max="6">
+    <textarea placeholder="Write your full answer here…" style="min-height:120px;"></textarea>
+    <div class="row"><button class="check-btn">Show mark points</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="markpoints">
+      <span class="lbl">Mark points — tick each one your answer covered (up to 6)</span>
+      <label class="mp-item"><input type="checkbox"><span>One-point: the easiest method to carry out</span></label>
+      <label class="mp-item"><input type="checkbox"><span>One-point: only one point of data is used</span></label>
+      <label class="mp-item"><input type="checkbox"><span>One-point: can only be used to measure set or constant variables, so has limited use</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point: more complex than one-point, because it is needed when a range of values is monitored</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point: two points of data are used</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point: needs a linear relationship between the sensor readings and the variable being monitored</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point: so it can’t be used when the relationship is a curve</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Multi-point: the most complex method</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Multi-point: used for non-linear relationships</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Multi-point: multiple points of data are used</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Multi-point: greater knowledge of maths is needed</span></label>
+      <div class="mp-foot"><span class="mp-count">0 / 6 marks</span><span class="mp-note"></span></div>
+    </div>
+  </div>
+</div>
+<div class="task" data-task="points" data-points="5">
+  <p class="task-label"><span>Extended answer</span><span class="pts">5 points</span></p>
+  <h4>Describe the differences between one-point and two-point calibration. (5 marks)</h4>
+  <div class="sub-q mp" data-max="5">
+    <textarea placeholder="Write your full answer here…" style="min-height:120px;"></textarea>
+    <div class="row"><button class="check-btn">Show mark points</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="markpoints">
+      <span class="lbl">Mark points — tick each one your answer covered (up to 5)</span>
+      <label class="mp-item"><input type="checkbox"><span>One-point takes only one reading, whereas two-point takes at least two</span></label>
+      <label class="mp-item"><input type="checkbox"><span>One-point suits a value that is constant or never changes, whereas two-point suits a constantly changing variable</span></label>
+      <label class="mp-item"><input type="checkbox"><span>One-point calculates the offset only: the sensor reading is subtracted from the known value</span></label>
+      <label class="mp-item"><input type="checkbox"><span>The offset is then added to every later reading</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point has to include sensitivity (slope), not just an offset</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point is used where there is a linear relationship between the two readings</span></label>
+      <label class="mp-item"><input type="checkbox"><span>The slope of the line connecting the two readings is compared with the slope of the pre-calibrated sensor’s line (or the sensor’s range is compared with the standard’s range)</span></label>
+      <label class="mp-item"><input type="checkbox"><span>Two-point compensates for both offset errors and sensitivity/slope errors</span></label>
+      <div class="mp-foot"><span class="mp-count">0 / 5 marks</span><span class="mp-note"></span></div>
+    </div>
+  </div>
+</div>
+<div class="task" data-task="mcq" data-points="3">
+  <p class="task-label"><span>Quick check</span><span class="pts">3 points</span></p>
+  <div class="mcq" data-answer="2"><p class="q">1. One-point calibration is best suited to a sensor measuring…</p><div class="opts"><button class="opt" data-idx="0">A constantly changing variable</button><button class="opt" data-idx="1">A curved, non-linear relationship</button><button class="opt" data-idx="2">A set or constant physical variable</button></div><p class="mcq-feedback"></p></div>
+  <div class="mcq" data-answer="1"><p class="q">2. What does multi-point calibration need in its algorithm when readings form a curve?</p><div class="opts"><button class="opt" data-idx="0">A fixed offset added to every reading</button><button class="opt" data-idx="1">Curve fitting, for example a quadratic formula</button><button class="opt" data-idx="2">A single known value</button></div><p class="mcq-feedback"></p></div>
+  <div class="mcq" data-answer="0"><p class="q">3. Why do sensors need to be recalibrated regularly?</p><div class="opts"><button class="opt" data-idx="0">Their accuracy falls over time through use, exposure and erosion</button><button class="opt" data-idx="1">They stop producing analogue data</button><button class="opt" data-idx="2">The computer forgets the units</button></div><p class="mcq-feedback"></p></div>
+</div>
+</div>
+<div class="panel" id="panel-control">
+  <h2 class="section-title">Control technologies <span class="tag">3.2</span></h2>
+
+  <h3>Control systems</h3>
+<div class="block">
+  <ul>
+    <li>A <strong>control system</strong> uses microprocessors or computers to control physical variables such as temperature, pressure, humidity, moisture and light.</li>
+    <li>The computer does this by controlling devices that cause the variables to change, or by maintaining certain physical conditions at the same level for a period of time.</li>
+    <li>Control systems use <strong>real-time processing</strong>.</li>
+    <li>They use <strong>actuators</strong> to control devices such as motors.</li>
+    <li><strong>The output affects the input.</strong></li>
+    <li>Control systems involve continuous processes.</li>
+  </ul>
+</div>
+
+  <p><strong>Example:</strong> a temperature-controlled room. The temperature is monitored using sensors. If it falls below a certain value, the microprocessor sends a signal to the heater to switch on, which is the output. The heater being on heats the room and the temperature rises, which immediately affects the new input.</p>
+<div class="table-scroll">
+<table>
+<tr><th></th><th>Monitoring</th><th>Control</th></tr>
+<tr><td><strong>Purpose</strong></td><td>Measure and record physical variables over time</td><td>Keep a physical variable at a set level, or change it</td></tr>
+<tr><td><strong>Uses actuators?</strong></td><td>No — takes no action on the environment</td><td>Yes — for example motors and valves</td></tr>
+<tr><td><strong>Output</strong></td><td>Screen, printout or warning sound</td><td>A signal that makes an actuator change the physical environment</td></tr>
+<tr><td><strong>Effect on the input</strong></td><td>The output does not change what is being measured</td><td>The output affects the input</td></tr>
+<tr><td><strong>Example</strong></td><td>Weather station</td><td>Central heating</td></tr>
+</table>
+</div>
+
+  <h3>Sensors used in control</h3>
+<div class="table-scroll">
+<table>
+<tr><th>Sensor</th><th>Description and use</th></tr>
+<tr><td><strong>Electromagnetic field sensor</strong></td><td>Often called a magnetic field sensor. It measures the change in the Earth’s natural magnetic field caused by a ferromagnetic object. A vehicle above the sensor distorts the field because of the metal in its body, so its presence is detected. The sensor is small, so it is easier and cheaper to install and maintain than an induction loop, which does more or less the same job. Both are used at car park entrances to control barriers, but magnetic field sensors can also detect the number of spaces available. They are used in some automated car parking systems to help drivers park, in a similar way to ultrasonic sensors.</td></tr>
+<tr><td><strong>Ultrasonic sensor</strong></td><td>Made up of a device that sends out sound waves above the range of human hearing and a sensor that receives the reflected waves. It measures the time taken for the sound to be sent and received; combined with the known speed of sound, the microprocessor can calculate the distance to an object. Used in automated car parking systems to tell the driver how close they are to another vehicle or object so they can park without hitting it.</td></tr>
+<tr><td><strong>Proximity sensor</strong></td><td>Usually a device that sends out a signal (an infrared beam, ultrasound or a magnetic field) and a sensor that receives the reflected signal. One use is in smartphones, to switch off the screen when the phone is held near the ear.</td></tr>
+<tr><td><strong>Touch sensor</strong></td><td>One type measures fluid levels. A capacitive touch sensor measures the capacitance between two conductors separated by an insulating plate; one conductor is the fluid whose level is being measured. When the fluid touches the sensor, it detects that it is at that level. Often used to measure fluid levels such as the cooling water level in nuclear power plants, to make sure there is enough water to cool the reactors.</td></tr>
+</table>
+</div>
+
+  <h3>Actuators</h3>
+<div class="block">
+  <ul>
+    <li>An <strong>actuator</strong> is a device that turns an electrical signal from a microprocessor into a movement.</li>
+    <li>It is the mechanical part of the control system that provides the output by controlling a device, such as opening a valve.</li>
+    <li>It can also be a motor that controls the opening or shutting of windows in a greenhouse.</li>
+  </ul>
+</div>
+
+  <h3>Uses of control technology</h3>
+
+  <p><strong>Greenhouses (glasshouses)</strong> — the sensors needed are:</p>
+<div class="block">
+  <ul>
+    <li>A <strong>temperature sensor</strong> to measure the air temperature in the greenhouse</li>
+    <li>A <strong>moisture sensor</strong> to measure the water content of the soil</li>
+    <li>A <strong>light sensor</strong> to measure the light level inside the greenhouse</li>
+  </ul>
+</div>
+
+  <p><strong>Maintaining the required temperature</strong></p>
+<div class="block">
+  <ol>
+    <li>At the start, the user inputs the required temperature (the <strong>pre-set value</strong>) using a keypad, number pad or touchscreen.</li>
+    <li>The computer receives temperature data from the temperature sensor.</li>
+    <li>It is passed to an ADC, which converts the analogue signal to a digital value the computer can understand.</li>
+    <li>The computer compares the sensor data with the pre-set value.</li>
+    <li>If the temperature is above the pre-set value, it sends a signal to the window motor to open the window, or to leave it open if it is already open.</li>
+    <li>If the temperature is below or equal to the pre-set value, it sends a signal to the motor to close the window (or leave it closed), and sends a signal to the actuator to switch the heater on (or leave it on).</li>
+    <li>The whole process is continuous as long as the system is switched on.</li>
+  </ol>
+</div>
+<div class="codewrap"><span class="code-label">Pseudocode — greenhouse temperature</span><pre class="code"><span class="kw">WHILE</span> system switched on
+   <span class="kw">INPUT</span> temperature
+   <span class="kw">IF</span> temperature &gt; pre-set
+      <span class="kw">THEN</span>
+         send signal to window motor to open window or leave it open
+         send signal to actuator to switch off heater or leave it off
+      <span class="kw">ELSE</span>
+         send signal to window motor to close window or leave it closed
+         send signal to actuator to switch on heater or leave it on
+   <span class="kw">ENDIF</span>
+<span class="kw">ENDWHILE</span></pre></div>
+
+  <p><strong>Maintaining the required soil moisture</strong></p>
+<div class="block">
+  <ol>
+    <li>At the start, the user inputs the required soil moisture level (pre-set value) using a keypad, number pad or touchscreen.</li>
+    <li>The microprocessor receives data on the amount of moisture in the greenhouse soil from the moisture sensor.</li>
+    <li>The ADC converts the analogue data into a digital value the computer can understand.</li>
+    <li>The computer compares the sensor data with the pre-set value input by the user.</li>
+    <li>If the moisture level is below the pre-set value, a signal is sent to the actuator to open the sprinkler valve, or to leave it open if it is already open.</li>
+    <li>If the moisture level is above or equal to the pre-set value, a signal is sent to the actuator to close the sprinkler valve, or to leave it closed if it is already closed.</li>
+    <li>The whole process is continuous as long as the system is switched on.</li>
+  </ol>
+</div>
+<div class="block">
+  <ul>
+    <li>Some greenhouses also have sensors that measure the humidity of the air, because some plants need high humidity as well as warmth.</li>
+    <li>These have separate watering systems: one to spray water into the air and another to put more moisture into the soil.</li>
+  </ul>
+</div>
+<div class="codewrap"><span class="code-label">Pseudocode — greenhouse soil moisture</span><pre class="code"><span class="kw">WHILE</span> system switched on
+   <span class="kw">INPUT</span> moisture
+   <span class="kw">IF</span> moisture &lt; pre-set
+      <span class="kw">THEN</span>
+         send signal to actuator to open sprinkler valve or remain open
+      <span class="kw">ELSE</span>
+         send signal to actuator to close sprinkler valve or remain closed
+   <span class="kw">ENDIF</span>
+<span class="kw">ENDWHILE</span></pre></div>
+
+  <p><strong>Maintaining the required level of light</strong></p>
+<div class="block">
+  <ul>
+    <li>When the light is not very good, a light source needs to come on so the plants have good growing conditions.</li>
+    <li>A pre-set value still needs to be entered: if the light is less than the pre-set value, the light source is activated.</li>
+    <li>However, when night comes the light source needs to be switched off. A <strong>second pre-set value</strong> is therefore entered, so that when the amount of light falls below that value, as at night, the light source is switched off.</li>
+    <li>A light sensor measures the amount of light coming into the greenhouse, and analogue to digital conversion takes place.</li>
+    <li>The processing is carried out by the microprocessor.</li>
+  </ul>
+</div>
+
+  <p class="note"><em>pre-set1</em> is the light level below which it is dull during the day; <em>pre-set2</em> is the light level as it gets dark at night.</p>
+<div class="codewrap"><span class="code-label">Pseudocode — greenhouse lighting</span><pre class="code"><span class="kw">WHILE</span> system switched on
+   <span class="kw">INPUT</span> light_level
+   <span class="kw">IF</span> light_level &lt; pre-set1
+      <span class="kw">THEN</span>
+         <span class="kw">IF</span> light_level &lt; pre-set2
+            <span class="kw">THEN</span>
+               send signal to actuator to switch off light source or leave off
+            <span class="kw">ELSE</span>
+               send signal to actuator to switch on light source or leave on
+         <span class="kw">ENDIF</span>
+      <span class="kw">ELSE</span>
+         send signal to actuator to switch off light source or leave off
+   <span class="kw">ENDIF</span>
+<span class="kw">ENDWHILE</span></pre></div>
+
+  <p><strong>Central heating systems</strong></p>
+<div class="block">
+  <ol>
+    <li>The user enters the required temperature using a keypad or touchscreen.</li>
+    <li>The microprocessor stores the required temperature as a pre-set value.</li>
+    <li>The microprocessor receives the temperature from the sensor.</li>
+    <li>The microprocessor compares the temperature from the sensor with the pre-set value.</li>
+    <li>If the temperature from the sensor is lower than the pre-set value, the microprocessor sends a signal to an actuator to open the gas valves.</li>
+    <li>If the temperature from the sensor is lower than the pre-set value, the microprocessor sends a signal to an actuator to switch the pump on.</li>
+    <li>If the temperature is higher than or equal to the pre-set value, the microprocessor sends a signal to switch the pump off and close the valves.</li>
+    <li>The sequence is repeated until the system is switched off.</li>
+  </ol>
+</div>
+<div class="codewrap"><span class="code-label">Pseudocode — central heating</span><pre class="code"><span class="kw">WHILE</span> system switched on
+   <span class="kw">INPUT</span> temperature
+   <span class="kw">IF</span> temperature &lt; pre-set
+      <span class="kw">THEN</span>
+         send signal to open gas valves
+         send signal to switch pump on
+      <span class="kw">ELSE</span>
+         send signal to close gas valves
+         send signal to switch pump off
+   <span class="kw">ENDIF</span>
+<span class="kw">ENDWHILE</span></pre></div>
+
+  <p><strong>Air-conditioning systems</strong></p>
+<div class="block">
+  <ol>
+    <li>The user enters the required temperature using a keypad or touchscreen.</li>
+    <li>The microprocessor stores the required temperature as a pre-set value.</li>
+    <li>The microprocessor receives the temperature from the sensor.</li>
+    <li>The microprocessor compares the temperature from the sensor with the pre-set value.</li>
+    <li>If the temperature from the sensor is higher than the pre-set value, the microprocessor sends a signal to an actuator to switch the fans on.</li>
+    <li>If the temperature is lower than or equal to the pre-set value, the microprocessor sends a signal to switch the fans off.</li>
+    <li>The sequence is repeated until the system is switched off.</li>
+  </ol>
+</div>
+
+  <p><strong>Burglar alarms</strong> — microprocessor-controlled burglar alarm systems are used in many houses to protect against intruders. The sensors are:</p>
+<div class="block">
+  <ul>
+    <li><strong>Infra-red sensors</strong> to detect the movement of human bodies, which give off heat</li>
+    <li><strong>Sound sensors</strong> to detect the level of sound an intruder might make</li>
+    <li><strong>Pressure sensors</strong> placed under a carpet or rug, to detect the increase in weight caused by a burglar treading on it</li>
+  </ul>
+</div>
+
+  <p>The microprocessor is programmed with certain acceptable levels, and only acts if the sensor readings are greater than these. An ADC is needed so the microprocessor can understand the sensor data. When an intruder is detected, the alarm sounds, a light flashes, and a signal is probably sent to the police to alert them to a possible intruder. The system has to be switched on by the user for this to work.</p>
+
+  <p><strong>Control of traffic and pedestrian flow</strong> — smart motorways</p>
+<div class="block">
+  <ul>
+    <li>A smart motorway is a section of motorway that uses <strong>active traffic management (ATM)</strong> techniques.</li>
+    <li>The system uses variable speed limits and/or lets drivers use the hard shoulder at certain times.</li>
+    <li>Computers constantly monitor the road and can change the speed limit or open the hard shoulder to traffic.</li>
+    <li>Normally traffic isn’t allowed on the hard shoulder and a red cross is displayed above it. If traffic becomes congested, the computer opens the hard shoulder by moving the red cross.</li>
+    <li>The computer uses “side-fire radar”, which fires a radar beam at an angle to the roadside.</li>
+    <li>The device measures the speed of the vehicles it is pointed at by detecting the change in frequency of the radar signal when it is reflected back off an oncoming vehicle.</li>
+    <li>All this data is constantly fed back to the computers, which process it and decide what action to take. If the road becomes busy, the system can automatically lower the speed limit or open the hard shoulder to traffic.</li>
+    <li>The computer’s decisions will often be made without human intervention, unless a decision appears to be unusual.</li>
+  </ul>
+</div>
+
+  <p><strong>Car park barriers</strong></p>
+<div class="block">
+  <ul>
+    <li>An <strong>induction loop</strong> is buried below the road surface in front of the barrier.</li>
+    <li>As a car passes over the loop, the metal in the vehicle changes the magnetic field, which causes a change in induction that the loop detects (current flows).</li>
+    <li>The loop sends back data, which is converted to digital. If the computer detects a change compared with a pre-set value, it sends a signal to the actuator, the motor switch, which makes the barrier rise.</li>
+    <li>A <strong>light sensor</strong> is used to detect when the vehicle has passed beyond the barrier: a light beam passes across the space occupied by the vehicle.</li>
+    <li>If the vehicle stops the light beam reaching the sensor, the microprocessor keeps the barrier raised.</li>
+    <li>When the vehicle is clear, the microprocessor detects that the light beam has resumed and sends a signal to the motor to retract and lower the barrier. This makes sure the barrier stays up until the vehicle has passed through the beam.</li>
+    <li>Ultrasonic sensors are sometimes used in place of light sensors.</li>
+  </ul>
+</div>
+
+  <p><strong>Ticket-issuing car park barrier systems</strong></p>
+<div class="block">
+  <ul>
+    <li>Some car park barriers issue a ticket on entry that contains a barcode.</li>
+    <li>When the driver wants to leave, they put the ticket into a machine with a barcode reader and pay for the time parked. The reader feeds the information to the computer, which registers that the barcode belongs to a driver who has paid.</li>
+    <li>As the vehicle leaves, the driver puts the ticket into a machine at the barrier that has another barcode reader. The computer checks whether the barcode matches the list of barcodes belonging to drivers who have paid, and sends a signal to the motor to lift the barrier.</li>
+    <li>Some systems use a magnetic strip instead of a barcode, while others use <strong>automatic number plate recognition</strong>: the customer types the car’s number plate into the ticket machine before paying. When the car reaches the exit, a camera sends the number plate details to the computer, which uses <strong>OCR</strong> to read the plate. If the plate matches the paid records, a signal is sent to the motor to lift the barrier.</li>
+  </ul>
+</div>
+
+  <p><strong>Traffic lights</strong></p>
+<div class="block">
+  <ul>
+    <li>The computer is programmed to react to different volumes of traffic during the day, and uses induction loops to detect them.</li>
+    <li>The computer receives data from the induction loops by way of an ADC and counts the number of vehicles travelling in each direction.</li>
+    <li>The count is compared with pre-set values, and the computer changes the traffic timings and sequences as required by sending signals to the control box in the traffic lights, which then operates the new sequences or timings.</li>
+    <li>The whole process is continuous.</li>
+    <li>These systems sometimes have to allow for pedestrians crossing at the junction. The pedestrian presses a button at the side of the road; the computer registers this and, after a pre-defined delay, sends a signal to the actuator to change the traffic lights from green to red. It also lights a sign telling pedestrians they can cross.</li>
+    <li>There can be a fair delay if the lights have only just changed, but most modern systems using induction loops can tell whether traffic is light, and so reduce the delay.</li>
+  </ul>
+</div>
+
+  <h3>Wireless sensor and actuator networks (WSAN)</h3>
+<div class="block">
+  <ul>
+    <li>A <strong>wireless sensor and actuator network (WSAN)</strong> is a group of sensors and actuators that communicate wirelessly.</li>
+    <li>They are called WSANs because actuators can be grouped together to perform a collaborative action, and are then referred to as an <strong>actor</strong>.</li>
+    <li>An actor works as if it has a microprocessor inside it, because it can make decisions. For example, a robot can be an actor because it contains several actuators in one unit.</li>
+    <li>Examples include smart parking systems, which alert drivers to where car parking spaces are available, and combined heating, ventilation and air conditioning systems.</li>
+    <li><strong>Wireless sensor networks</strong> are slightly different: they take no action but simply monitor the environment, such as the wearable devices used to monitor an athlete’s performance.</li>
+  </ul>
+</div>
+
+  <h3>Smart homes</h3>
+<div class="block">
+  <ul>
+    <li>A <strong>smart home</strong> is a home in which devices and appliances are connected so they can communicate with each other and be controlled by commands from anyone living in the house.</li>
+    <li>A smart home uses the home computer network and router, and is an example of a WSAN.</li>
+    <li>Commands can be given by voice, remote control, tablet or smartphone.</li>
+    <li>The most common devices controlled this way are televisions, music centres, lights, burglar alarms, central heating and air-conditioning units.</li>
+    <li>Smart homes have developed because of the increased use of smartphones and tablets, which are continuously connected to the internet and so can control any online devices.</li>
+    <li>The ability to control devices through a digital network is called the <strong>Internet of Things (IoT)</strong>.</li>
+    <li><strong>Benefit:</strong> a homeowner on their way to work can avoid the panic of remembering they forgot to turn the heating off.</li>
+    <li><strong>Risk:</strong> smart homes are vulnerable to hackers, who could access the home network and turn off the burglar alarm, or just cause a nuisance such as turning lights off.</li>
+  </ul>
+</div>
+
+  <h3>Advantages and disadvantages of using control technology</h3>
+<div class="proscons">
+  <div class="pc pro"><p class="pc-title">Advantages</p><ul><li>Microprocessor-controlled burglar alarms give people a greater sense of security, because they feel free from the risk of being burgled</li><li>Smart homes can reduce the energy needed to heat and light a home, and can save household costs such as electricity by switching appliances off automatically when not needed</li><li>Computer-controlled traffic lights have led to fewer traffic jams than mechanical or time-controlled ones</li><li>Air-conditioning in shopping malls makes shopping more comfortable in warm weather</li><li>Control systems can help people with disabilities who find it difficult to move around to use devices in their home</li><li>Computer-controlled systems process data more quickly than a human could, so reactions to changes in the inputs are almost immediate</li><li>People are free to do other things, such as leisure activities, because they don’t have to be in the house to do the cooking or wash clothes or dishes</li><li>In a computer-controlled greenhouse, a human might forget to take readings or be busy, whereas a computer takes readings at regular intervals, straight away and faster</li><li>Computers can monitor more than one variable at a time, whereas a human has to take readings one at a time</li><li>Readings taken by computers are more reliable and accurate, because humans make mistakes</li><li>Control commands can be scheduled at any time, day or night, without a human being physically present</li></ul></div>
+  <div class="pc con"><p class="pc-title">Disadvantages</p><ul><li>Computer-controlled car park barriers have increased unemployment: new jobs such as maintenance technicians have been created, but far fewer than the jobs lost</li><li>Smart homes can make people lazy and over-reliant on microprocessor-controlled devices</li><li>Smart homes have caused a loss of manual household skills, and stop people doing simple exercise such as walking around or using their hands and arms as much as they used to</li><li>Air-conditioning can raise costs for shops, which in turn raises prices for consumers</li><li>Control systems cost a lot in the first place; for example, smart devices are more expensive than non-smart ones</li><li>A computer-controlled system can’t work if there is a problem with the computer, or a power outage without backup power</li></ul></div>
+</div>
+
+<div class="task" data-task="open" data-points="4">
+  <p class="task-label"><span>Worked example</span><span class="pts">4 points</span></p>
+  <h4>Answer each question about control technologies.</h4>
+  <div class="sub-q">
+    <label>a) What is the device that turns an electrical signal from a microprocessor into a movement, such as opening a valve?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Actuator</div>
+    <div class="self-mark"><input type="checkbox" id="sm-5"><label for="sm-5">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>b) Which sensor works out the distance to an object from the time taken for sound waves to be sent and received?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Ultrasonic sensor</div>
+    <div class="self-mark"><input type="checkbox" id="sm-6"><label for="sm-6">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>c) What is the name for controlling online devices through a digital network?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Internet of Things (IoT)</div>
+    <div class="self-mark"><input type="checkbox" id="sm-7"><label for="sm-7">My answer was close enough — award myself the point</label></div>
+  </div>
+  <div class="sub-q">
+    <label>d) What is a group of sensors and actuators that communicate wirelessly called?</label>
+    <textarea placeholder="Type your answer here…"></textarea>
+    <div class="row"><button class="check-btn">Check answer</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="answer-reveal"><span class="lbl">Answer</span>Wireless sensor and actuator network (WSAN)</div>
+    <div class="self-mark"><input type="checkbox" id="sm-8"><label for="sm-8">My answer was close enough — award myself the point</label></div>
+  </div>
+</div>
+<div class="task" data-task="classify" data-points="6">
+  <p class="task-label"><span>Sort it</span><span class="pts">6 points</span></p>
+  <h4>Click whether each example is monitoring or control.</h4>
+  <div class="classify-list">
+    <div class="classify-item" data-answer="mon"><span class="term">Recording temperature readings over time and showing them as a graph</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+    <div class="classify-item" data-answer="con"><span class="term">Switching a heater on when the room falls below the pre-set temperature</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+    <div class="classify-item" data-answer="mon"><span class="term">A weather station working out the highest and lowest daily temperature</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+    <div class="classify-item" data-answer="con"><span class="term">Opening a greenhouse window motor when it gets too hot</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+    <div class="classify-item" data-answer="mon"><span class="term">Sounding a warning if conditions in a nuclear reactor become critical</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+    <div class="classify-item" data-answer="con"><span class="term">Opening a sprinkler valve when the soil is too dry</span><span class="choices"><button data-choice="mon">Monitoring</button><button data-choice="con">Control</button></span></div>
+  </div>
+</div>
+<div class="task" data-task="classify" data-points="6">
+  <p class="task-label"><span>Sort it</span><span class="pts">6 points</span></p>
+  <h4>Click which control system each description belongs to.</h4>
+  <div class="classify-list">
+    <div class="classify-item" data-answer="burg"><span class="term">A pressure sensor under a rug detects the weight of someone treading on it</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+    <div class="classify-item" data-answer="park"><span class="term">An induction loop detects the car, and a light beam keeps the barrier up until the vehicle has passed</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+    <div class="classify-item" data-answer="tl"><span class="term">Vehicles in each direction are counted, and the timings change to suit the traffic</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+    <div class="classify-item" data-answer="green"><span class="term">A moisture sensor triggers a sprinkler valve when the soil is dry</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+    <div class="classify-item" data-answer="burg"><span class="term">Infra-red sensors detect the body heat of an intruder</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+    <div class="classify-item" data-answer="park"><span class="term">A ticket with a barcode is checked at the exit before the barrier lifts</span><span class="choices"><button data-choice="green">Greenhouse</button><button data-choice="burg">Burglar alarm</button><button data-choice="park">Car park barrier</button><button data-choice="tl">Traffic lights</button></span></div>
+  </div>
+</div>
+<div class="task" data-task="points" data-points="6">
+  <p class="task-label"><span>Extended answer</span><span class="pts">6 points</span></p>
+  <h4>Describe how a computer-controlled greenhouse keeps its temperature at the required level. (6 marks)</h4>
+  <div class="sub-q mp" data-max="6">
+    <textarea placeholder="Write your full answer here…" style="min-height:120px;"></textarea>
+    <div class="row"><button class="check-btn">Show mark points</button></div>
+    <p class="error-msg">Try writing your own answer first — that's how you actually learn it. Don't skip straight to the answer!</p>
+    <div class="markpoints">
+      <span class="lbl">Mark points — tick each one your answer covered (up to 6)</span>
+      <label class="mp-item"><input type="checkbox"><span>The user enters the required temperature (the pre-set value)</span></label>
+      <label class="mp-item"><input type="checkbox"><span>The temperature sensor sends readings to the computer</span></label>
+      <label class="mp-item"><input type="checkbox"><span>An ADC converts the analogue readings to digital</span></label>
+      <label class="mp-item"><input type="checkbox"><span>The computer compares the reading with the pre-set value</span></label>
+      <label class="mp-item"><input type="checkbox"><span>If it is above the pre-set value, a signal is sent to the window motor to open the window (or leave it open)</span></label>
+      <label class="mp-item"><input type="checkbox"><span>If it is below or equal to the pre-set value, a signal is sent to close the window (or leave it closed)</span></label>
+      <label class="mp-item"><input type="checkbox"><span>If it is below or equal to the pre-set value, a signal is sent to the actuator to switch the heater on (or leave it on)</span></label>
+      <label class="mp-item"><input type="checkbox"><span>The process repeats continuously while the system is switched on</span></label>
+      <div class="mp-foot"><span class="mp-count">0 / 6 marks</span><span class="mp-note"></span></div>
+    </div>
+  </div>
+</div>
+<div class="task" data-task="mcq" data-points="3">
+  <p class="task-label"><span>Quick check</span><span class="pts">3 points</span></p>
+  <div class="mcq" data-answer="1"><p class="q">1. In a control system, how are the output and the input related?</p><div class="opts"><button class="opt" data-idx="0">They are unrelated</button><button class="opt" data-idx="1">The output affects the input</button><button class="opt" data-idx="2">The input is only recorded, never changed</button></div><p class="mcq-feedback"></p></div>
+  <div class="mcq" data-answer="2"><p class="q">2. Why does a greenhouse lighting system need two pre-set values?</p><div class="opts"><button class="opt" data-idx="0">One for humidity and one for temperature</button><button class="opt" data-idx="1">One for rain and one for wind</button><button class="opt" data-idx="2">To switch the lights on when it is dull by day, but off when it gets dark at night</button></div><p class="mcq-feedback"></p></div>
+  <div class="mcq" data-answer="0"><p class="q">3. What keeps a car park barrier raised until the vehicle has passed?</p><div class="opts"><button class="opt" data-idx="0">A light beam and light sensor detecting that the space is clear</button><button class="opt" data-idx="1">A barcode reader at the entrance</button><button class="opt" data-idx="2">The driver pressing a button</button></div><p class="mcq-feedback"></p></div>
+</div>
+</div>
+
+</div>
+
+<footer>
+  Cambridge AS &amp; A Level IT · Monitoring and Control — built for revision, points are just for you.
+</footer>
+
+<script>
+(function(){
+  const scoreValEl = document.getElementById('score-val');
+  const scoreMaxEl = document.getElementById('score-max');
+  let score = 0;
+  function addScore(n){
+    score += n;
+    if(score < 0) score = 0;
+    scoreValEl.textContent = score;
+  }
+
+  // Work out the maximum score from what is actually on the page
+  let max = 0;
+  document.querySelectorAll('.self-mark input[type=checkbox]').forEach(function(cb){
+    max += parseInt(cb.dataset.points || '1', 10);
+  });
+  document.querySelectorAll('.sub-q.mp').forEach(function(sq){
+    max += parseInt(sq.dataset.max, 10);
+  });
+  max += document.querySelectorAll('.classify-item').length;
+  max += document.querySelectorAll('.mcq').length;
+  scoreMaxEl.textContent = max;
+
+  // Tabs
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabBtns.forEach(function(b){ b.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+  // Written questions with one self-marked point each
+  document.querySelectorAll('.sub-q:not(.mp)').forEach(function(sq){
+    const btn = sq.querySelector('.check-btn');
+    const ta = sq.querySelector('textarea');
+    const err = sq.querySelector('.error-msg');
+    const reveal = sq.querySelector('.answer-reveal');
+    const mark = sq.querySelector('.self-mark');
+    const checkbox = mark ? mark.querySelector('input[type=checkbox]') : null;
+    if(!btn || !reveal || !mark) return;
+
+    btn.addEventListener('click', function(){
+      if(!ta.value.trim()){
+        err.classList.add('show');
+        reveal.classList.remove('show');
+        mark.classList.remove('show');
+        ta.focus();
+        return;
+      }
+      err.classList.remove('show');
+      reveal.classList.add('show');
+      mark.classList.add('show');
+    });
+
+    if(checkbox){
+      checkbox.addEventListener('change', function(){
+        const pts = parseInt(checkbox.dataset.points || '1', 10);
+        addScore(checkbox.checked ? pts : -pts);
+      });
+    }
+  });
+
+  // Extended answers: tick the mark points you covered, capped at the maximum
+  document.querySelectorAll('.sub-q.mp').forEach(function(sq){
+    const cap = parseInt(sq.dataset.max, 10);
+    const btn = sq.querySelector('.check-btn');
+    const ta = sq.querySelector('textarea');
+    const err = sq.querySelector('.error-msg');
+    const panel = sq.querySelector('.markpoints');
+    const note = sq.querySelector('.mp-note');
+    const count = sq.querySelector('.mp-count');
+    const boxes = panel.querySelectorAll('input[type=checkbox]');
+    let awarded = 0;
+
+    btn.addEventListener('click', function(){
+      if(!ta.value.trim()){
+        err.classList.add('show');
+        panel.classList.remove('show');
+        ta.focus();
+        return;
+      }
+      err.classList.remove('show');
+      panel.classList.add('show');
+    });
+
+    boxes.forEach(function(cb){
+      cb.addEventListener('change', function(){
+        if(cb.checked){
+          if(awarded >= cap){
+            cb.checked = false;
+            note.textContent = "That's already full marks (" + cap + "). Untick a point first to swap it.";
+            return;
+          }
+          awarded += 1;
+          addScore(1);
+        } else {
+          awarded -= 1;
+          addScore(-1);
+        }
+        note.textContent = '';
+        count.textContent = awarded + ' / ' + cap + ' marks';
+      });
+    });
+  });
+
+  // Sort-it tasks
+  document.querySelectorAll('.classify-item').forEach(function(item){
+    const answer = item.dataset.answer;
+    const buttons = item.querySelectorAll('.choices button');
+    buttons.forEach(function(b){
+      b.addEventListener('click', function(){
+        buttons.forEach(function(other){ other.disabled = true; });
+        if(b.dataset.choice === answer){
+          b.classList.add('correct');
+          addScore(1);
+        } else {
+          b.classList.add('incorrect');
+          buttons.forEach(function(other){
+            if(other.dataset.choice === answer) other.classList.add('correct');
+          });
+        }
+      });
+    });
+  });
+
+  // Quick checks
+  document.querySelectorAll('.mcq').forEach(function(mcq){
+    const correctIdx = mcq.dataset.answer;
+    const opts = mcq.querySelectorAll('.opt');
+    const feedback = mcq.querySelector('.mcq-feedback');
+    opts.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        opts.forEach(function(o){ o.disabled = true; });
+        if(opt.dataset.idx === correctIdx){
+          opt.classList.add('correct');
+          feedback.textContent = 'Correct.';
+          feedback.className = 'mcq-feedback ok';
+          addScore(1);
+        } else {
+          opt.classList.add('incorrect');
+          opts.forEach(function(o){
+            if(o.dataset.idx === correctIdx) o.classList.add('correct');
+          });
+          feedback.textContent = 'Not quite — the correct answer is highlighted above.';
+          feedback.className = 'mcq-feedback bad';
+        }
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
