@@ -1050,6 +1050,167 @@
   });
 
 })();
+  (function(){
+  var STORE_KEY = 'ict-lesson-progress::' + location.pathname + '::' + document.title;
+
+  function load(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function save(mutator){
+    try {
+      var s = load();
+      mutator(s);
+      localStorage.setItem(STORE_KEY, JSON.stringify(s));
+    } catch(e){ /* storage unavailable or full — fail silently */ }
+  }
+
+  var subQs      = Array.prototype.slice.call(document.querySelectorAll('.task[data-task="open"] .sub-q'));
+  var classifyIt = Array.prototype.slice.call(document.querySelectorAll('.classify-item'));
+  var mcqs       = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  var orderTasks = Array.prototype.slice.call(document.querySelectorAll('.task[data-task="order"]'));
+  var selectTasks= Array.prototype.slice.call(document.querySelectorAll('.task[data-task="select"]'));
+
+  // ---- SAVE: listen alongside the page's own handlers ----
+
+  subQs.forEach(function(sq, i){
+    var key = 'subq-' + i;
+    var ta = sq.querySelector('textarea');
+    var btn = sq.querySelector('.check-btn');
+    var cb = sq.querySelector('.self-mark input[type=checkbox]');
+
+    if(ta) ta.addEventListener('input', function(){
+      save(function(s){ s[key] = s[key] || {}; s[key].text = ta.value; });
+    });
+    if(btn) btn.addEventListener('click', function(){
+      save(function(s){
+        s[key] = s[key] || {};
+        s[key].text = ta ? ta.value : '';
+        s[key].checked = !!(ta && ta.value.trim());
+      });
+    });
+    if(cb) cb.addEventListener('change', function(){
+      save(function(s){ s[key] = s[key] || {}; s[key].selfMarked = cb.checked; });
+    });
+  });
+
+  classifyIt.forEach(function(item, i){
+    var buttons = item.querySelectorAll('.choices button');
+    buttons.forEach(function(b, bi){
+      b.addEventListener('click', function(){
+        save(function(s){ s['classify-' + i] = bi; });
+      });
+    });
+  });
+
+  mcqs.forEach(function(mcq, i){
+    var opts = mcq.querySelectorAll('.opt');
+    opts.forEach(function(o, oi){
+      o.addEventListener('click', function(){
+        save(function(s){ s['mcq-' + i] = oi; });
+      });
+    });
+  });
+
+  orderTasks.forEach(function(task, ti){
+    var items = task.querySelectorAll('.order-item');
+    items.forEach(function(item){
+      item.addEventListener('click', function(){
+        save(function(s){
+          var key = 'order-' + ti;
+          s[key] = s[key] || [];
+          s[key].push(item.dataset.order);
+        });
+      });
+    });
+  });
+
+  selectTasks.forEach(function(task, ti){
+    var btn = task.querySelector('.check-select-btn');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var items = Array.prototype.slice.call(task.querySelectorAll('.select-item input'));
+      var checkedIdx = [];
+      items.forEach(function(inp, ii){ if(inp.checked) checkedIdx.push(ii); });
+      save(function(s){ s['select-' + ti] = checkedIdx; });
+    });
+  });
+
+  // ---- RESTORE: replay stored answers as real clicks, so the page's
+  // own scoring logic runs exactly as it did originally ----
+
+  (function restore(){
+    var s = load();
+
+    subQs.forEach(function(sq, i){
+      var rec = s['subq-' + i];
+      if(!rec) return;
+      var ta = sq.querySelector('textarea');
+      var btn = sq.querySelector('.check-btn');
+      var cb = sq.querySelector('.self-mark input[type=checkbox]');
+      if(ta && rec.text) ta.value = rec.text;
+      if(rec.checked && btn) btn.click();
+      if(rec.selfMarked && cb){
+        cb.checked = true;
+        cb.dispatchEvent(new Event('change'));
+      }
+    });
+
+    classifyIt.forEach(function(item, i){
+      var bi = s['classify-' + i];
+      if(bi === undefined) return;
+      var buttons = item.querySelectorAll('.choices button');
+      if(buttons[bi]) buttons[bi].click();
+    });
+
+    mcqs.forEach(function(mcq, i){
+      var oi = s['mcq-' + i];
+      if(oi === undefined) return;
+      var opts = mcq.querySelectorAll('.opt');
+      if(opts[oi]) opts[oi].click();
+    });
+
+    orderTasks.forEach(function(task, ti){
+      var seq = s['order-' + ti];
+      if(!seq) return;
+      seq.forEach(function(orderVal){
+        var items = task.querySelectorAll('.order-item');
+        for(var j = 0; j < items.length; j++){
+          if(items[j].dataset.order === orderVal && !items[j].disabled){
+            items[j].click();
+            break;
+          }
+        }
+      });
+    });
+
+    selectTasks.forEach(function(task, ti){
+      var idxArr = s['select-' + ti];
+      if(!idxArr) return;
+      var items = Array.prototype.slice.call(task.querySelectorAll('.select-item input'));
+      idxArr.forEach(function(ii){ if(items[ii]) items[ii].checked = true; });
+      var btn = task.querySelector('.check-select-btn');
+      if(btn) btn.click();
+    });
+  })();
+
+  // ---- Small "reset my answers" control ----
+  var resetBtn = document.createElement('button');
+  resetBtn.textContent = 'Reset my answers';
+  resetBtn.setAttribute('type', 'button');
+  resetBtn.style.cssText = 'position:fixed;bottom:14px;left:14px;z-index:50;font-family:JetBrains Mono,monospace;'
+    + 'font-size:11px;padding:7px 11px;background:transparent;border:1px solid #496354;'
+    + 'color:#a9a294;border-radius:3px;cursor:pointer;';
+  resetBtn.addEventListener('mouseenter', function(){ resetBtn.style.color = '#e9e4d6'; });
+  resetBtn.addEventListener('mouseleave', function(){ resetBtn.style.color = '#a9a294'; });
+  resetBtn.addEventListener('click', function(){
+    if(confirm('Clear all your saved answers on this page?')){
+      localStorage.removeItem(STORE_KEY);
+      location.reload();
+    }
+  });
+  document.body.appendChild(resetBtn);
+})();
 </script>
 </body>
 </html>
